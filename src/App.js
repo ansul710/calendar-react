@@ -1,23 +1,22 @@
-import logo from './logo.svg';
-import './App.css';
+// import "react-calendar/dist/Calendar.css";
+import "./App.css";
+import Calendar from "react-calendar";
+import React, { useState } from "react";
+import "./Calendar.css";
+import AllEvents from "./AllEvents";
 
 function App() {
+  const [value, onChange] = useState(new Date());
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="App App-header">
+      <div className=" flex-container">
+        <div className="Calendar-border flex-child">
+          <Calendar onChange={onChange} value={value} />
+        </div>
+        <div className="flex-child">
+          <AllEvents />
+        </div>
+      </div>
     </div>
   );
 }
