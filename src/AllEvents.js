@@ -5,10 +5,9 @@ import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import React, { useState } from "react";
-// import { useRef } from "react";
 import { useEffect } from "react";
 
-function AllEvents() {
+function AllEvents(props) {
   // var today = new Date(),
   //   time =
   //     today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
@@ -23,12 +22,12 @@ function AllEvents() {
     setIsOpen(false);
   };
 
-  const [tasks, setTasks] = useState("");
+  const [task, setTask] = useState("");
   const [takeTime, setTime] = useState();
-  const [stateObj, setStateObj] = useState({ task: "", time: "" });
+  const [stateObj, setStateObj] = useState([]);
 
   function taskHandler(e) {
-    setTasks(e.target.value);
+    setTask(e.target.value);
   }
 
   function timeHandler(e) {
@@ -36,14 +35,53 @@ function AllEvents() {
   }
 
   useEffect(() => {
-    console.log(tasks);
-    console.log(takeTime);
-    console.log(stateObj);
+    console.log("day", props.day);
+    console.log("task", task);
+    console.log("time", takeTime);
+    console.log("object", stateObj);
   });
 
-  function addData() {
-    setStateObj({ task: tasks, time: takeTime });
+  function sortArray(newObj) {
+    newObj.map((value) =>
+      value.tasks.sort((a, b) => {
+        return a.time > b.time ? 1 : -1;
+      })
+    );
+    return newObj;
+    console.log("obj", stateObj);
   }
+
+  function addData() {
+    const newObj = [...stateObj];
+
+    const found = newObj.find((obj) => {
+      return obj.day === props.day;
+    });
+
+    console.log("found", found);
+    var index = newObj.indexOf(found);
+    console.log("index", index);
+
+    if (index >= 0) {
+      newObj[index].tasks.push({ task: task, time: takeTime });
+      const sortedArray = sortArray(newObj);
+      setStateObj(sortedArray);
+    } else {
+      const obj = [
+        ...stateObj,
+        { day: props.day, tasks: [{ task: task, time: takeTime }] },
+      ];
+
+      setStateObj(sortArray(obj));
+    }
+
+    setIsOpen(false);
+  }
+
+  const filtered = stateObj.filter((obj) => {
+    return obj.day === props.day;
+  });
+  console.log("filtered", filtered);
 
   return (
     <div>
@@ -51,6 +89,22 @@ function AllEvents() {
         <div className="title pos">
           <h5>Tasks</h5>
         </div>
+        {filtered <= 0 && <h5>No Tasks for today</h5>}
+        <div>
+          {filtered.map((item, index) => (
+            <div key={index}>
+              {/* <h5>{item.day}</h5> */}
+              {item.tasks.map((task, i) => (
+                <div key={i}>
+                  <h5>{task.task}</h5>
+                  <h5>{task.time}</h5>
+                  <hr />
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+
         <div className="event-body">
           <Modal
             className="modal.fade.show"
@@ -72,7 +126,7 @@ function AllEvents() {
                     placeholder="Enter event"
                     name="task"
                     onChange={taskHandler}
-                    value={tasks}
+                    value={task}
                   />
                 </Form.Group>
                 <Form.Group className="mb-3" controlId="formBasicPassword">
@@ -102,7 +156,11 @@ function AllEvents() {
         </div>
       </div>
       <div className="bottom-div">
-        <button className="btn btn-light btn-sm" onClick={showModal}>
+        <button
+          className="btn btn-light btn-md add-event-btn"
+          style={{ border: "1px solid black" }}
+          onClick={showModal}
+        >
           <span>➕</span> Add Event
         </button>
       </div>

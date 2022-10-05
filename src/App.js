@@ -7,14 +7,16 @@ import AllEvents from "./AllEvents";
 
 function App() {
   const [value, onChange] = useState(new Date());
+  const day = value.toLocaleDateString();
+  console.log(day);
   return (
     <div className="App App-header">
       <div className=" flex-container">
         <div className="Calendar-border flex-child">
-          <Calendar onChange={onChange} value={value} />
+          <Calendar onChange={onChange} />
         </div>
         <div className="flex-child">
-          <AllEvents />
+          <AllEvents day={day} />
         </div>
       </div>
     </div>
