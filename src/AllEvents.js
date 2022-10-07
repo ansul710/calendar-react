@@ -1,5 +1,7 @@
 import "./Calendar.css";
 import "./AllEvents.css";
+import image1 from "./delete.png";
+// import image2 from "./delete-hover.png";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
@@ -48,7 +50,7 @@ function AllEvents(props) {
       })
     );
     return newObj;
-    console.log("obj", stateObj);
+    // console.log("obj", stateObj);
   }
 
   function addData() {
@@ -83,6 +85,15 @@ function AllEvents(props) {
   });
   console.log("filtered", filtered);
 
+  function deleteData(e) {
+    console.log("e", e);
+    // console.log("index", i);
+    console.log(
+      "found object at",
+      stateObj.findIndex((e) => e === e)
+    );
+  }
+
   return (
     <div>
       <div className="all-event-box">
@@ -95,10 +106,19 @@ function AllEvents(props) {
             <div key={index}>
               {/* <h5>{item.day}</h5> */}
               {item.tasks.map((task, i) => (
-                <div key={i}>
-                  <h5>{task.task}</h5>
-                  <h5>{task.time}</h5>
-                  <hr />
+                <div
+                  className="card"
+                  style={{ marginBottom: "10px" }}
+                  key={i}
+                  onClick={deleteData}
+                >
+                  <p className="card-title card-header">{task.time}</p>
+                  <p
+                    className="card-body card-text"
+                    style={{ padding: "10px" }}
+                  >
+                    {task.task}
+                  </p>
                 </div>
               ))}
             </div>
@@ -146,6 +166,20 @@ function AllEvents(props) {
               </Modal.Body>
 
               <Modal.Footer>
+                <Button
+                  onClick={deleteData}
+                  className="delete-btn btn btn-light "
+                >
+                  <img
+                    className="delete"
+                    src={image1}
+                    // onMouseOver={(e) => (e.currentTarget.src = { image2 })}
+                    // onMouseOut={(e) => (e.currentTarget.src = { image1 })}
+                    alt="delete"
+                  />
+                  {/* <img src={image1} alt="delete" className="delete" /> */}
+                </Button>
+
                 <Button className="btn btn-light" onClick={hideModal}>
                   Cancel
                 </Button>
