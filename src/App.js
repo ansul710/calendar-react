@@ -8,7 +8,7 @@ import AllEvents from "./AllEvents";
 function App() {
   const [value, onChange] = useState(new Date());
   const day = value.toLocaleDateString();
-  console.log(day);
+  // console.log(day);
   return (
     <div className="App App-header">
       <div className=" flex-container">
