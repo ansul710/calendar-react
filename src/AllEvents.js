@@ -12,8 +12,10 @@ import { useEffect } from "react";
 function AllEvents(props) {
   const [isOpen, setIsOpen] = React.useState(false);
   const [selectedItem, setSelectedItem] = React.useState();
+  const [eventAdd, setEventAdd] = useState(false);
 
   const showModal = () => {
+    setEventAdd(true);
     setIsOpen(true);
   };
 
@@ -29,9 +31,18 @@ function AllEvents(props) {
     setIsOpen(true);
   };
 
-  const hideModal = () => {
+  const hideModal = (id) => {
     setIsOpen(false);
-    setSelectedItem(undefined);
+    // setSelectedItem(undefined);
+    console.log(id);
+    // if (!id) {
+    //   setEventAdd(false);
+    // }
+  };
+
+  const hideAddEventModal = () => {
+    setIsOpen(false);
+    setEventAdd(false);
   };
 
   const [task, setTask] = useState("");
@@ -39,6 +50,8 @@ function AllEvents(props) {
   const [stateObj, setStateObj] = useState([]);
 
   function taskHandler(e) {
+    console.log("e", e);
+    console.log("e-value", e.target.value);
     setTask(e.target.value);
   }
 
@@ -72,7 +85,7 @@ function AllEvents(props) {
     });
 
     var index = newObj.indexOf(found);
-
+    console.log("task is --->:", task);
     if (index >= 0) {
       newObj[index].tasks.push({ id: id, task: task, time: takeTime });
       const sortedArray = sortArray(newObj);
@@ -85,6 +98,9 @@ function AllEvents(props) {
       setStateObj(sortArray(obj));
     }
     setIsOpen(false);
+    setTime("");
+    setTask("");
+    setEventAdd(false);
   }
 
   const filtered = stateObj.filter((obj) => {
@@ -92,6 +108,7 @@ function AllEvents(props) {
   });
 
   function deleteData(day, id) {
+    setEventAdd(false);
     if (day !== undefined || id !== undefined) {
       console.log("day", day);
       for (let a = 0; a <= stateObj.length; a++) {
@@ -121,6 +138,8 @@ function AllEvents(props) {
       console.log("empty tasks");
     }
     setIsOpen(false);
+    setTime("");
+    setTask("");
   }
 
   return (
@@ -160,14 +179,15 @@ function AllEvents(props) {
         <div className="event-body">
           {/* -------------------------------------------------------------------------------------------------------- */}
           {/* this modal is when user want to edit or delete data */}
-          {selectedItem !== undefined ? (
+          {selectedItem !== undefined && !eventAdd ? (
             <Modal
               className="modal.fade.show"
-              size="sm"
+              size="md"
               show={isOpen}
               onHide={hideModal}
               centered
             >
+              {console.log("selectedone")}
               <Form>
                 <Modal.Header>
                   <Modal.Title>Add Tasks</Modal.Title>
@@ -233,9 +253,9 @@ function AllEvents(props) {
             // this modal is for the very first time when user need to add new event
             <Modal
               className="modal.fade.show"
-              size="sm"
+              size="md"
               show={isOpen}
-              onHide={hideModal}
+              onHide={hideAddEventModal}
               centered
             >
               <Form>
@@ -271,7 +291,7 @@ function AllEvents(props) {
                 </Modal.Body>
 
                 <Modal.Footer>
-                  <Button className="btn btn-light" onClick={hideModal}>
+                  <Button className="btn btn-light" onClick={hideAddEventModal}>
                     Cancel
                   </Button>
                   <Button onClick={addData}>Save</Button>
