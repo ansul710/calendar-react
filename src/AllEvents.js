@@ -13,6 +13,8 @@ function AllEvents(props) {
   const [isOpen, setIsOpen] = React.useState(false);
   const [selectedItem, setSelectedItem] = React.useState();
   const [eventAdd, setEventAdd] = useState(false);
+  const [dataChanged, setDataChanged] = useState(false);
+  const [initial, setInitial] = useState(true);
 
   const showModal = () => {
     setEventAdd(true);
@@ -60,11 +62,50 @@ function AllEvents(props) {
   }
 
   useEffect(() => {
-    // console.log("day", props.day);
-    // console.log("task", task);
-    // console.log("time", takeTime);
-    console.log("object", stateObj);
-  });
+    const postData = async () => {
+      try {
+        const response = await fetch(
+          "https://calendar-react-e9101-default-rtdb.firebaseio.com/tasks.json",
+          {
+            method: "PUT",
+            body: JSON.stringify(stateObj),
+          }
+        );
+        // setSpinner(false);
+        setDataChanged(false);
+        console.log(response);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
+    const fetchData = async () => {
+      try {
+        const response = await fetch(
+          "https://calendar-react-e9101-default-rtdb.firebaseio.com/tasks.json"
+        );
+
+        const data = await response.json();
+        if (data !== null) {
+          console.log(data);
+          setStateObj(data);
+        } else {
+          setStateObj([]);
+        }
+        setInitial(false);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
+    if (dataChanged === true) {
+      console.log("inside post data");
+      postData();
+    } else if (initial === true && !dataChanged) {
+      console.log("inside fetch data");
+      fetchData();
+    }
+  }, [stateObj]);
 
   function sortArray(newObj) {
     newObj.map((value) =>
@@ -101,6 +142,7 @@ function AllEvents(props) {
     setTime("");
     setTask("");
     setEventAdd(false);
+    setDataChanged(true);
   }
 
   const filtered = stateObj.filter((obj) => {
@@ -140,6 +182,7 @@ function AllEvents(props) {
     setIsOpen(false);
     setTime("");
     setTask("");
+    setDataChanged(true);
   }
 
   return (
