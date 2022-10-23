@@ -1,7 +1,6 @@
 import "./Calendar.css";
 import "./AllEvents.css";
 import image1 from "./delete.png";
-// import image2 from "./delete-hover.png";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
@@ -186,174 +185,179 @@ function AllEvents(props) {
   }
 
   return (
-    <div>
-      <div className="all-event-box">
-        <div className="title pos">
-          <h5>Tasks</h5>
-        </div>
-        {filtered <= 0 && <h5>No Tasks for today</h5>}
-        <div>
-          {filtered.map((item, index) => (
-            <div key={index}>
-              {/* <h5>{item.day}</h5> */}
-              {item.tasks.map((task, i) => (
-                <div
-                  className="card"
-                  style={{ marginBottom: "10px" }}
-                  key={task.id}
-                  id={task.id}
-                  onClick={() => handleSelect(item.day, task.id)}
-                >
-                  <p className="card-title card-header">{task.time}</p>
-                  <p className="card-title card-header">{task.id}</p>
-
-                  <p
-                    className="card-body card-text"
-                    style={{ padding: "10px" }}
+    <>
+      <div>
+        <div className="all-event-box">
+          <div className="title pos">
+            <h5>Tasks</h5>
+          </div>
+          {filtered <= 0 && <h5>No Tasks for today</h5>}
+          <div>
+            {filtered.map((item, index) => (
+              <div key={index}>
+                {/* <h5>{item.day}</h5> */}
+                {item.tasks.map((task, i) => (
+                  <div
+                    className="card"
+                    style={{ marginBottom: "10px" }}
+                    key={task.id}
+                    id={task.id}
+                    onClick={() => handleSelect(item.day, task.id)}
                   >
-                    {task.task}
-                  </p>
-                </div>
-              ))}
-            </div>
-          ))}
+                    <p className="card-title card-header">{task.time}</p>
+                    <p className="card-title card-header">{task.id}</p>
+
+                    <p
+                      className="card-body card-text"
+                      style={{ padding: "10px" }}
+                    >
+                      {task.task}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
+
+          <div className="event-body">
+            {/* -------------------------------------------------------------------------------------------------------- */}
+            {/* this modal is when user want to edit or delete data */}
+            {selectedItem !== undefined && !eventAdd ? (
+              <Modal
+                className="modal.fade.show"
+                size="md"
+                show={isOpen}
+                onHide={hideModal}
+                centered
+              >
+                {console.log("selectedone")}
+                <Form>
+                  <Modal.Header>
+                    <Modal.Title>Add Tasks</Modal.Title>
+                  </Modal.Header>
+
+                  <Modal.Body>
+                    <Form.Group className="mb-3" controlId="formBasicEmail">
+                      <Form.Label>Enter Task</Form.Label>
+                      <Form.Control
+                        type="text"
+                        placeholder="Enter event"
+                        name="task"
+                        onChange={taskHandler}
+                        value={selectedItem.obj[0].task}
+                        disabled
+                      />
+                    </Form.Group>
+                    <Form.Group className="mb-3" controlId="formBasicPassword">
+                      <Form.Label>Time of the day</Form.Label>
+                      <br />
+                      <input
+                        type="time"
+                        id="appt"
+                        name="takeTime"
+                        min="00:00"
+                        max="24:00"
+                        required
+                        onChange={timeHandler}
+                        value={selectedItem.obj[0].time}
+                        disabled
+                      />
+                    </Form.Group>
+                  </Modal.Body>
+
+                  <Modal.Footer>
+                    <Button
+                      onClick={() => {
+                        deleteData(selectedItem.day, selectedItem.id);
+                      }}
+                      className="delete-btn btn btn-light "
+                    >
+                      <img
+                        className="delete"
+                        src={image1}
+                        // onMouseOver={(e) => (e.currentTarget.src = { image2 })}
+                        // onMouseOut={(e) => (e.currentTarget.src = { image1 })}
+                        alt="delete"
+                      />
+                      {/* <img src={image1} alt="delete" className="delete" /> */}
+                    </Button>
+
+                    <Button className="btn btn-light" onClick={hideModal}>
+                      Cancel
+                    </Button>
+                    <Button onClick={addData} disabled>
+                      Save
+                    </Button>
+                  </Modal.Footer>
+                </Form>
+              </Modal>
+            ) : (
+              // --------------------------------------------------------------------------------------------------
+              // this modal is for the very first time when user need to add new event
+              <Modal
+                className="modal.fade.show"
+                size="md"
+                show={isOpen}
+                onHide={hideAddEventModal}
+                centered
+              >
+                <Form>
+                  <Modal.Header>
+                    <Modal.Title>Add Tasks</Modal.Title>
+                  </Modal.Header>
+
+                  <Modal.Body>
+                    <Form.Group className="mb-3" controlId="formBasicEmail">
+                      <Form.Label>Enter Task</Form.Label>
+                      <Form.Control
+                        type="text"
+                        placeholder="Enter event"
+                        name="task"
+                        onChange={taskHandler}
+                        // value={task}
+                      />
+                    </Form.Group>
+                    <Form.Group className="mb-3" controlId="formBasicPassword">
+                      <Form.Label>Time of the day</Form.Label>
+                      <br />
+                      <input
+                        type="time"
+                        id="appt"
+                        name="takeTime"
+                        min="00:00"
+                        max="24:00"
+                        required
+                        onChange={timeHandler}
+                        // value={takeTime}
+                      />
+                    </Form.Group>
+                  </Modal.Body>
+
+                  <Modal.Footer>
+                    <Button
+                      className="btn btn-light"
+                      onClick={hideAddEventModal}
+                    >
+                      Cancel
+                    </Button>
+                    <Button onClick={addData}>Save</Button>
+                  </Modal.Footer>
+                </Form>
+              </Modal>
+            )}
+          </div>
         </div>
-
-        <div className="event-body">
-          {/* -------------------------------------------------------------------------------------------------------- */}
-          {/* this modal is when user want to edit or delete data */}
-          {selectedItem !== undefined && !eventAdd ? (
-            <Modal
-              className="modal.fade.show"
-              size="md"
-              show={isOpen}
-              onHide={hideModal}
-              centered
-            >
-              {console.log("selectedone")}
-              <Form>
-                <Modal.Header>
-                  <Modal.Title>Add Tasks</Modal.Title>
-                </Modal.Header>
-
-                <Modal.Body>
-                  <Form.Group className="mb-3" controlId="formBasicEmail">
-                    <Form.Label>Enter Task</Form.Label>
-                    <Form.Control
-                      type="text"
-                      placeholder="Enter event"
-                      name="task"
-                      onChange={taskHandler}
-                      value={selectedItem.obj[0].task}
-                      disabled
-                    />
-                  </Form.Group>
-                  <Form.Group className="mb-3" controlId="formBasicPassword">
-                    <Form.Label>Time of the day</Form.Label>
-                    <br />
-                    <input
-                      type="time"
-                      id="appt"
-                      name="takeTime"
-                      min="00:00"
-                      max="24:00"
-                      required
-                      onChange={timeHandler}
-                      value={selectedItem.obj[0].time}
-                      disabled
-                    />
-                  </Form.Group>
-                </Modal.Body>
-
-                <Modal.Footer>
-                  <Button
-                    onClick={() => {
-                      deleteData(selectedItem.day, selectedItem.id);
-                    }}
-                    className="delete-btn btn btn-light "
-                  >
-                    <img
-                      className="delete"
-                      src={image1}
-                      // onMouseOver={(e) => (e.currentTarget.src = { image2 })}
-                      // onMouseOut={(e) => (e.currentTarget.src = { image1 })}
-                      alt="delete"
-                    />
-                    {/* <img src={image1} alt="delete" className="delete" /> */}
-                  </Button>
-
-                  <Button className="btn btn-light" onClick={hideModal}>
-                    Cancel
-                  </Button>
-                  <Button onClick={addData} disabled>
-                    Save
-                  </Button>
-                </Modal.Footer>
-              </Form>
-            </Modal>
-          ) : (
-            // --------------------------------------------------------------------------------------------------
-            // this modal is for the very first time when user need to add new event
-            <Modal
-              className="modal.fade.show"
-              size="md"
-              show={isOpen}
-              onHide={hideAddEventModal}
-              centered
-            >
-              <Form>
-                <Modal.Header>
-                  <Modal.Title>Add Tasks</Modal.Title>
-                </Modal.Header>
-
-                <Modal.Body>
-                  <Form.Group className="mb-3" controlId="formBasicEmail">
-                    <Form.Label>Enter Task</Form.Label>
-                    <Form.Control
-                      type="text"
-                      placeholder="Enter event"
-                      name="task"
-                      onChange={taskHandler}
-                      // value={task}
-                    />
-                  </Form.Group>
-                  <Form.Group className="mb-3" controlId="formBasicPassword">
-                    <Form.Label>Time of the day</Form.Label>
-                    <br />
-                    <input
-                      type="time"
-                      id="appt"
-                      name="takeTime"
-                      min="00:00"
-                      max="24:00"
-                      required
-                      onChange={timeHandler}
-                      // value={takeTime}
-                    />
-                  </Form.Group>
-                </Modal.Body>
-
-                <Modal.Footer>
-                  <Button className="btn btn-light" onClick={hideAddEventModal}>
-                    Cancel
-                  </Button>
-                  <Button onClick={addData}>Save</Button>
-                </Modal.Footer>
-              </Form>
-            </Modal>
-          )}
+        <div className="bottom-div">
+          <button
+            className="btn btn-light btn-md add-event-btn"
+            style={{ border: "1px solid black" }}
+            onClick={showModal}
+          >
+            <span>➕</span> Add Event
+          </button>
         </div>
       </div>
-      <div className="bottom-div">
-        <button
-          className="btn btn-light btn-md add-event-btn"
-          style={{ border: "1px solid black" }}
-          onClick={showModal}
-        >
-          <span>➕</span> Add Event
-        </button>
-      </div>
-    </div>
+    </>
   );
 }
 
