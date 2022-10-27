@@ -1,6 +1,6 @@
 import "./App.css";
 import Calendar from "react-calendar";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./Calendar.css";
 import AllEvents from "./AllEvents";
 import AuthenticationForm from "./AuthenticationForm";
@@ -13,7 +13,7 @@ function App() {
   const day = value.toLocaleDateString();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [auth, setAuth] = useState({ token: "", expiresIn: "" });
-
+  const [errorMessage, setErrorMessage] = useState();
   const [emailHolder, setEmailHolder] = useState();
   const [passwordHolder, setPasswordHolder] = useState();
 
@@ -23,79 +23,100 @@ function App() {
   function passwordHandler(e) {
     setPasswordHolder(e.target.value);
   }
-  function createUser(e) {
-    e.preventDefault();
-    const postUser = async () => {
-      try {
-        const response = await fetch(
-          "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyCtRIeY7HpqYpDAZjC-QTs4WDXtlkUa7Xk",
-          {
-            method: "POST",
-            body: JSON.stringify({
-              email: emailHolder,
-              password: passwordHolder,
-              returnSecureToken: true,
-            }),
-            headers: {
-              "Content-type": "application/json",
-            },
-          }
-        );
 
-        const data = await response.json();
-        if (data) {
-          setAuth({ token: data.idToken, expiresIn: data.expiresIn });
-          setIsLoggedIn(true);
-        }
-        console.log(data);
-      } catch (err) {
-        console.log(err);
-      }
-    };
-    postUser();
-  }
-
-  function logInUSer(e) {
-    e.preventDefault();
+  function apiCall(URL) {
+    let API_KEY = "key=AIzaSyCtRIeY7HpqYpDAZjC-QTs4WDXtlkUa7Xk";
     const fetchUser = async () => {
       try {
-        const response = await fetch(
-          "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyCtRIeY7HpqYpDAZjC-QTs4WDXtlkUa7Xk",
-          {
-            method: "POST",
-            body: JSON.stringify({
-              email: emailHolder,
-              password: passwordHolder,
-              returnSecureToken: true,
-            }),
-            headers: {
-              "Content-type": "application/json",
-            },
-          }
-        );
+        const response = await fetch(URL + API_KEY, {
+          method: "POST",
+          body: JSON.stringify({
+            email: emailHolder,
+            password: passwordHolder,
+            returnSecureToken: true,
+          }),
+          headers: {
+            "Content-type": "application/json",
+          },
+        });
 
         const data = await response.json();
 
-        if (data) {
+        if (data && !data.error) {
+          console.log(data);
           setAuth({ token: data.idToken, expiresIn: data.expiresIn });
           setIsLoggedIn(true);
+        } else {
+          setErrorMessage(data.error.message);
         }
-        console.log(data);
       } catch (err) {
-        console.log(err);
+        setErrorMessage(err);
       }
     };
     fetchUser();
   }
 
+  function createUser(e) {
+    e.preventDefault();
+    let URL = "https://identitytoolkit.googleapis.com/v1/accounts:signUp?";
+    apiCall(URL);
+  }
+
+  function logInUser(e) {
+    e.preventDefault();
+    let URL =
+      "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?";
+    apiCall(URL);
+  }
+  // ---------------------------- Timer for autoTimeout --------------------------------------
+  const events = [
+    "load",
+    "mousemove",
+    "mousedown",
+    "click",
+    "scroll",
+    "keypress",
+  ];
+
+  let timer;
+
+  // this resets the timer if it exists.
+  const resetTimer = () => {
+    if (timer) clearTimeout(timer);
+  };
+
+  const handleLogoutTimer = () => {
+    timer = setTimeout(() => {
+      // clears any pending timer.
+      resetTimer();
+      // Listener clean up. Removes the existing event listener from the window
+      Object.values(events).forEach((item) => {
+        window.removeEventListener(item, resetTimer);
+      });
+      // logs out user
+      logOutHandler();
+    }, 60000); // 10000ms = 10secs.
+  };
+
+  useEffect(() => {
+    Object.values(events).forEach((item) => {
+      window.addEventListener(item, () => {
+        resetTimer();
+        handleLogoutTimer();
+      });
+    });
+  }, []);
+  // ---------------------------- End of Timer for autoTimeout --------------------------------------
+
   function logOutHandler() {
+    localStorage.clear();
     window.location.reload(false);
   }
 
   return (
     <>
       {isLoggedIn && (
-        <Navbar bg="dark" variant="dark">
+        <Navbar bg="dark" variant="dark" style={{ padding: "4px 0px" }}>
           <Nav className="container-fluid">
             <Nav.Item></Nav.Item>
             <Nav.Item>
@@ -107,7 +128,7 @@ function App() {
                   <img
                     src={logout}
                     alt="logout-icon"
-                    style={{ width: "35px" }}
+                    style={{ width: "26px" }}
                   />
                 </span>
               </Nav.Link>
@@ -119,7 +140,11 @@ function App() {
       {!isLoggedIn ? (
         <AuthenticationForm
           data={{
-            User: { createUser: createUser, logInUSer: logInUSer },
+            User: {
+              createUser: createUser,
+              logInUser: logInUser,
+            },
+            error: errorMessage,
             email: { email: emailHolder, handler: emailHandler },
             password: { password: passwordHolder, handler: passwordHandler },
           }}

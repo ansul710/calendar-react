@@ -15,7 +15,7 @@ function AuthenticationForm(props) {
         className="Auth-form"
         onSubmit={
           authMode === "signin"
-            ? props.data.User.logInUSer
+            ? props.data.User.logInUser
             : props.data.User.createUser
         }
       >
@@ -48,6 +48,17 @@ function AuthenticationForm(props) {
               </div>
             )}
           </div>
+          <br></br>
+          {props.data.error && (
+            <div
+              class="alert alert-danger"
+              style={{ padding: "10px", textAlign: "center" }}
+              role="alert"
+            >
+              <small style={{ textAlign: "center" }}>{props.data.error}</small>
+            </div>
+          )}
+
           <div className="form-group mt-3">
             <label>Email address</label>
             <input

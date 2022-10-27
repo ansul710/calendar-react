@@ -205,7 +205,7 @@ function AllEvents(props) {
                     onClick={() => handleSelect(item.day, task.id)}
                   >
                     <p className="card-title card-header">{task.time}</p>
-                    <p className="card-title card-header">{task.id}</p>
+                    {/* <p className="card-title card-header">{task.id}</p> */}
 
                     <p
                       className="card-body card-text"
