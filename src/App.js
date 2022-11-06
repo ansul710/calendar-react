@@ -118,7 +118,11 @@ function App() {
       {isLoggedIn && (
         <Navbar bg="dark" variant="dark" style={{ padding: "4px 0px" }}>
           <Nav className="container-fluid">
-            <Nav.Item></Nav.Item>
+            <Nav.Item>
+              <span style={{ color: "white", paddingLeft: "60px" }}>
+                Hello &#128075;, {emailHolder}!
+              </span>
+            </Nav.Item>
             <Nav.Item>
               <Nav.Link
                 onClick={logOutHandler}
@@ -156,7 +160,7 @@ function App() {
               <Calendar onChange={onChange} />
             </div>
             <div className="flex-child">
-              <AllEvents day={day} />
+              <AllEvents day={day} email={emailHolder} />
             </div>
           </div>
         </div>

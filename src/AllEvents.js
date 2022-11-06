@@ -63,8 +63,10 @@ function AllEvents(props) {
   useEffect(() => {
     const postData = async () => {
       try {
+        const name = props.email.split("@");
         const response = await fetch(
-          "https://calendar-react-e9101-default-rtdb.firebaseio.com/tasks.json",
+          `https://calendar-react-e9101-default-rtdb.firebaseio.com/${name[0]}.json`,
+          // "https://calendar-react-e9101-default-rtdb.firebaseio.com/tasks.json",
           {
             method: "PUT",
             body: JSON.stringify(stateObj),
@@ -80,8 +82,12 @@ function AllEvents(props) {
 
     const fetchData = async () => {
       try {
+        console.log("email", props.email);
+
+        const name = props.email.split("@");
         const response = await fetch(
-          "https://calendar-react-e9101-default-rtdb.firebaseio.com/tasks.json"
+          `https://calendar-react-e9101-default-rtdb.firebaseio.com/${name[0]}.json`
+          // "https://calendar-react-e9101-default-rtdb.firebaseio.com/tasks.json"
         );
 
         const data = await response.json();
@@ -204,13 +210,8 @@ function AllEvents(props) {
                     id={task.id}
                     onClick={() => handleSelect(item.day, task.id)}
                   >
-                    <p className="card-title card-header">{task.time}</p>
-                    {/* <p className="card-title card-header">{task.id}</p> */}
-
-                    <p
-                      className="card-body card-text"
-                      style={{ padding: "10px" }}
-                    >
+                    <p className="card-header">{task.time}</p>
+                    <p className=" card-text" style={{ padding: "10px" }}>
                       {task.task}
                     </p>
                   </div>
@@ -246,6 +247,7 @@ function AllEvents(props) {
                         onChange={taskHandler}
                         value={selectedItem.obj[0].task}
                         disabled
+                        autoFocus
                       />
                     </Form.Group>
                     <Form.Group className="mb-3" controlId="formBasicPassword">
